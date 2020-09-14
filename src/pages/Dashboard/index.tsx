@@ -36,8 +36,11 @@ const Dashboard: React.FC = () => {
     async function loadTransactions(): Promise<void> {
       const response = await api.get('/transactions');
 
-      setTransactions(response.data.transactions);
-      setBalance(response.data.balance);
+      if(response.data){
+        setTransactions(response.data.transactions);
+        setBalance(response.data.balance);
+      }
+
     }
 
     loadTransactions();
@@ -54,7 +57,7 @@ const Dashboard: React.FC = () => {
               <img src={income} alt="Income" />
             </header>
             <h1 data-testid="balance-income">
-              {formatValue(Number(balance.income))}
+              {formatValue(Number(balance.income || 0))}
             </h1>
           </Card>
           <Card>
@@ -63,7 +66,7 @@ const Dashboard: React.FC = () => {
               <img src={outcome} alt="Outcome" />
             </header>
             <h1 data-testid="balance-outcome">
-              {formatValue(Number(balance.outcome))}
+              {formatValue(Number(balance.outcome || 0))}
             </h1>
           </Card>
           <Card total>
@@ -72,7 +75,7 @@ const Dashboard: React.FC = () => {
               <img src={total} alt="Total" />
             </header>
             <h1 data-testid="balance-total">
-              {formatValue(Number(balance.total))}
+              {formatValue(Number(balance.total || 0))}
             </h1>
           </Card>
         </CardContainer>
@@ -89,14 +92,14 @@ const Dashboard: React.FC = () => {
             </thead>
 
             <tbody>
-              {transactions.map((transaction: Transaction) => (
+              {!!transactions.length && transactions.map((transaction: Transaction) => (
                 <tr>
                   <td className="title">{transaction.title}</td>
                   <td className={transaction.type}>
                     {transaction.type === 'outcome' && '- '}
-                    {formatValue(Number(transaction.value))}
+                    {formatValue(Number(transaction.value || 0))}
                   </td>
-                  <td>{transaction.category.title}</td>
+                  <td>{transaction.category && transaction.category.title}</td>
                   <td>{transaction.created_at}</td>
                 </tr>
               ))}
